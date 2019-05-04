@@ -1,10 +1,11 @@
 
-function processData(response, findThis) {
+function processData(response) {
+  console.log('this in processData ', this);
   var items = [];
   var filmsArray = response.data;
   console.log('response ', response);
   console.log('filmsArray ', filmsArray);
-  console.log(findThis);
+  
   $.each( filmsArray, function() {
     var title = this.title;
     var genres = this.genres;
@@ -15,11 +16,13 @@ function processData(response, findThis) {
   console.log(items);
 }
 
-function ajaxRequest(url) {
+function ajaxRequest(url, findThis) {
+  console.log('findThis in ajax ', findThis);
   $.ajax({
     url: url,
     dataType: 'json',
     data: { offset: 0, limit: 30 },
+    context: $('#findThis').val(),
     success: processData
   });
 }
@@ -31,7 +34,7 @@ $(function() {
     var findThis = $(this).find('#findThis').val();
     var url = 'http://react-cdp-api.herokuapp.com/movies/';
     console.log(findThis);
-    ajaxRequest(url);
+    ajaxRequest(url, findThis);
   });
 });
 
