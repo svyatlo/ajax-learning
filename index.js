@@ -1,40 +1,62 @@
-
 function processData(response) {
-  console.log('this in processData ', this);
-  var items = [];
-  var filmsArray = response.data;
+  var findThis = $('#findThis').val().toLowerCase();
+  console.log('findThis ', findThis);
+  var url = this.url;
+  var data = this.data;
+  var findedItemsArr = this.findedItemsArr;
+  console.log('findedItemsArr in processData ', findedItemsArr);
+  var responseArr = response.data;
   console.log('response ', response);
-  console.log('filmsArray ', filmsArray);
+  console.log('filmsArray ', responseArr);
   
-  $.each( filmsArray, function() {
-    var title = this.title;
+  $.each( responseArr, function() {
+    var title = this.title.toLowerCase();
+    var description = this.overview.toLowerCase();
     var genres = this.genres;
-    if (genres.includes(findThis)) {
-      items.push(this);
+
+    for (var i = 0; i < genres.length; i += 1) {
+      genres[i] = genres[i].toLowerCase();
+    }
+
+    if (title.includes(findThis) || description.includes(findThis) || genres.includes(findThis)) {
+      findedItemsArr.push(this);
     }
   });
-  console.log(items);
+  console.log(findedItemsArr);
+  
+  if (findedItemsArr.length < 10) {
+    data.offset += data.limit;
+    ajaxRequest(url, data, findedItemsArr);
+  }
 }
 
-function ajaxRequest(url, findThis) {
-  console.log('findThis in ajax ', findThis);
+function ajaxRequest(url, data, findedItemsArr) {
   $.ajax({
     url: url,
     dataType: 'json',
-    data: { offset: 0, limit: 30 },
-    context: $('#findThis').val(),
+    data: data,
+    context: { 
+      url: url,
+      data: data,
+      findedItemsArr: findedItemsArr
+    },
     success: processData
   });
 }
 
 $(function() {
+  var url = 'http://react-cdp-api.herokuapp.com/movies/';
+  var findedItemsArr = [];
+  var data = {
+    offset: 0,
+    limit: 5
+  }
+
   $('#form').submit(function(e) {
     e.preventDefault();
-
-    var findThis = $(this).find('#findThis').val();
-    var url = 'http://react-cdp-api.herokuapp.com/movies/';
-    console.log(findThis);
-    ajaxRequest(url, findThis);
+    findedItemsArr = [];
+    data.offset = 0;
+    ajaxRequest(url, data, findedItemsArr);
   });
 });
 
