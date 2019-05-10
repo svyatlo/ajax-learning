@@ -9,30 +9,39 @@ function renderItems(findedItemsArr) {
 }
 
 function processData(response) {
-  var findThis = $('#findThis').val().toLowerCase();
-  console.log('findThis ', findThis);
-  var url = this.url;
-  var data = this.data;
-  var findedItemsArr = this.findedItemsArr;
-  console.log('findedItemsArr in processData ', findedItemsArr);
-  var responseArr = response.data;
-  console.log('response ', response);
-  console.log('filmsArray ', responseArr);
-  
-  $.each( responseArr, function() {
-    var title = this.title.toLowerCase();
-    var description = this.overview.toLowerCase();
-    var genres = this.genres;
+  const responseArr = response.data;
+  const url = this.url;
+  const data = this.data;
+  const findedItemsArr = this.findedItemsArr;
+  const findThis = $('#findThis').val().toLowerCase();
 
-    for (var i = 0; i < genres.length; i += 1) {
+  console.log('response ', response);
+  console.log('responseArr ', responseArr);
+  console.log('findThis ', findThis);
+  
+  for (let i = 0; i < responseArr.length; i += 1) {
+    let title = responseArr[i].title.toLowerCase();
+    let description = responseArr[i].overview.toLowerCase();
+    let genres = responseArr[i].genres;
+
+    for (let i = 0; i < genres.length; i += 1) {
       genres[i] = genres[i].toLowerCase();
     }
 
     if (title.includes(findThis) || description.includes(findThis) || genres.includes(findThis)) {
-      findedItemsArr.push(this);
+      if (findedItemsArr.length < 10) {
+        findedItemsArr.push(responseArr[i]);
+      }
     }
-  });
-  console.log(findedItemsArr);
+
+    if (findedItemsArr.length === 10) {
+      data.offset += i + 1;
+      console.log('index ', i);
+      console.log('data.offset ', data.offset);
+      break;
+    }
+  }
+  console.log('findedItemsArr ', findedItemsArr);
   
   if (findedItemsArr.length < 10) {
     data.offset += data.limit;
@@ -57,21 +66,24 @@ function ajaxRequest(url, data, findedItemsArr) {
 }
 
 $(function() {
-  var url = 'http://react-cdp-api.herokuapp.com/movies/';
-  var findedItemsArr = [];
-  var data = {
+  const url = 'http://react-cdp-api.herokuapp.com/movies/';
+  const findedItemsArr = [];
+  const data = {
     offset: 0,
-    limit: 25
+    limit: 10
   }
-
-  $('#form').submit(function(e) {
-    e.preventDefault();
-    findedItemsArr = [];
-    data.offset = 0;
-    ajaxRequest(url, data, findedItemsArr);
-  });
+  let scrollCounter = 10;
+  
+  $('#form')
+    .append('<input id="findThis" type="text" name="findThis">')
+    .append('<input type="submit" value="Search">')
+    .submit(function(e) {
+      e.preventDefault();
+      findedItemsArr = [];
+      data.offset = 0;
+      ajaxRequest(url, data, findedItemsArr);
+    });
 });
-
 
 // $.getJSON(url, {
 //   offset: 0,
