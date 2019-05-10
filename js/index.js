@@ -1,3 +1,13 @@
+function renderItems(findedItemsArr) {
+  var content = '';
+  $.each(findedItemsArr, function() {
+    var img = ('<img src="' + this.poster_path + '" />');
+    content = content + img;
+  });
+  console.log(content);
+  $('#content').append(content);
+}
+
 function processData(response) {
   var findThis = $('#findThis').val().toLowerCase();
   console.log('findThis ', findThis);
@@ -27,6 +37,8 @@ function processData(response) {
   if (findedItemsArr.length < 10) {
     data.offset += data.limit;
     ajaxRequest(url, data, findedItemsArr);
+  } else {
+    renderItems(findedItemsArr);
   }
 }
 
@@ -49,7 +61,7 @@ $(function() {
   var findedItemsArr = [];
   var data = {
     offset: 0,
-    limit: 5
+    limit: 25
   }
 
   $('#form').submit(function(e) {
