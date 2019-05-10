@@ -1,10 +1,10 @@
 function renderItems(findedItemsArr) {
-  var content = '';
+  let content = '';
+  console.log('content ', content);
   $.each(findedItemsArr, function() {
     var img = ('<img src="' + this.poster_path + '" />');
     content = content + img;
   });
-  console.log(content);
   $('#content').append(content);
 }
 
@@ -36,6 +36,7 @@ function processData(response) {
 
     if (findedItemsArr.length === 10) {
       data.offset += i + 1;
+      renderItems(findedItemsArr);
       console.log('index ', i);
       console.log('data.offset ', data.offset);
       break;
@@ -46,8 +47,6 @@ function processData(response) {
   if (findedItemsArr.length < 10) {
     data.offset += data.limit;
     ajaxRequest(url, data, findedItemsArr);
-  } else {
-    renderItems(findedItemsArr);
   }
 }
 
@@ -67,7 +66,7 @@ function ajaxRequest(url, data, findedItemsArr) {
 
 $(function() {
   const url = 'http://react-cdp-api.herokuapp.com/movies/';
-  const findedItemsArr = [];
+  let findedItemsArr = [];
   const data = {
     offset: 0,
     limit: 10
@@ -79,8 +78,9 @@ $(function() {
     .append('<input type="submit" value="Search">')
     .submit(function(e) {
       e.preventDefault();
+      $('#content').empty();
       findedItemsArr = [];
-      data.offset = 0;
+      //data.offset = 0;
       ajaxRequest(url, data, findedItemsArr);
     });
 });
@@ -93,3 +93,4 @@ $(function() {
 //     });
 //     console.log(items);
 //   });
+// http://codeharmony.ru/materials/136
