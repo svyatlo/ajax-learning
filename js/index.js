@@ -1,19 +1,43 @@
-function renderItems(findedItemsArr) {
+function getTimeInHours(timeInMin) {
+  let timeInHours = 0;
+
+  if (!timeInMin) {
+    return '--';
+  }
+  
+  while (timeInMin >= 60) {
+    timeInHours += 1;
+    timeInMin -= 60;
+  }
+  return timeInHours + ' h ' + timeInMin + ' min ';
+}
+
+function renderItems(findedItems) {
   let content = '';
-  console.log('content ', content);
-  $.each(findedItemsArr, function() {
-    var img = ('<img src="' + this.poster_path + '" />');
-    content = content + img;
+  $.each(findedItems, function() {
+    const genres = this.genres.join(', ');
+    const time = getTimeInHours(this.runtime);
+    content += '<div class="content__item">'
+                + '<img src="' + this.poster_path + '" />'
+                + '<div class="item-description">'
+                  + '<div class="item-title"><h2>' + this.title + '</h2><p>' + this.tagline + '</p></div>'
+                  + '<div class="item-info"><h3>Genre: </h3><p>' + genres + '</p></div>'
+                  + '<div class="item-info"><h3>Time: </h3><p>' + time + '</p></div>'
+                  + '<div class="item-info"><h3>Rating: </h3><p>' + this.vote_average + '<span>(Votes: ' + this.vote_count + ')</span></p></div>'
+                  + '<div class="item-info"><h3>Description: </h3><p>' + this.overview + '</p></div>'
+                + '</div>'
+            + '</div>';
   });
   $('#content').append(content);
 }
 
 function processData(response) {
   const responseArr = response.data;
-  const url = this.url;
   const data = this.data;
-  const findedItemsArr = this.findedItemsArr;
+  const findedItems = this.data.findedItems;
   const findThis = $('#findThis').val().toLowerCase();
+
+  data.inProgress = false;
 
   console.log('response ', response);
   console.log('responseArr ', responseArr);
@@ -29,49 +53,47 @@ function processData(response) {
     }
 
     if (title.includes(findThis) || description.includes(findThis) || genres.includes(findThis)) {
-      if (findedItemsArr.length < 10) {
-        findedItemsArr.push(responseArr[i]);
+      if (findedItems.length < 10) {
+        findedItems.push(responseArr[i]);
       }
     }
 
-    if (findedItemsArr.length === 10) {
+    if (findedItems.length === 10) {
       data.offset += i + 1;
-      renderItems(findedItemsArr);
-      console.log('index ', i);
+      renderItems(findedItems);
       console.log('data.offset ', data.offset);
       break;
     }
   }
-  console.log('findedItemsArr ', findedItemsArr);
+  console.log('findedItems ', findedItems);
   
-  if (findedItemsArr.length < 10) {
+  if (findedItems.length < 10) {
     data.offset += data.limit;
-    ajaxRequest(url, data, findedItemsArr);
+    ajaxRequest(data);
   }
 }
 
-function ajaxRequest(url, data, findedItemsArr) {
+function ajaxRequest(data) {
   $.ajax({
-    url: url,
+    url: data.url,
     dataType: 'json',
-    data: data,
-    context: { 
-      url: url,
-      data: data,
-      findedItemsArr: findedItemsArr
+    data: { offset: data.offset },
+    context: {
+      data: data
     },
+    beforeSend: function() { data.inProgress = true; },
     success: processData
   });
 }
 
 $(function() {
-  const url = 'http://react-cdp-api.herokuapp.com/movies/';
-  let findedItemsArr = [];
   const data = {
+    url: 'http://react-cdp-api.herokuapp.com/movies/',
     offset: 0,
-    limit: 10
-  }
-  let scrollCounter = 10;
+    limit: 10,
+    findedItems: [],
+    inProgress: false
+  };
   
   $('#form')
     .append('<input id="findThis" type="text" name="findThis">')
@@ -79,9 +101,17 @@ $(function() {
     .submit(function(e) {
       e.preventDefault();
       $('#content').empty();
-      findedItemsArr = [];
-      //data.offset = 0;
-      ajaxRequest(url, data, findedItemsArr);
+      data.findedItems = [];
+      data.offset = 0;
+      ajaxRequest(data);
+    });
+
+  $(window)
+    .scroll(function() {
+      if ($(window).scrollTop() + $(window).height() >= $(document).height() - 20 && !data.inProgress) {
+        data.findedItems = [];
+        ajaxRequest(data);
+      }
     });
 });
 
@@ -93,4 +123,3 @@ $(function() {
 //     });
 //     console.log(items);
 //   });
-// http://codeharmony.ru/materials/136
