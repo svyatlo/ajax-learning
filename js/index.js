@@ -1,34 +1,29 @@
 function getTimeInHours(timeInMin) {
-  let timeInHours = 0;
-
   if (!timeInMin) {
     return '--';
   }
-  
-  while (timeInMin >= 60) {
-    timeInHours += 1;
-    timeInMin -= 60;
-  }
-  return timeInHours + ' h ' + timeInMin + ' min ';
+  return (Math.floor(timeInMin / 60) || 0) + 'h ' + timeInMin % 60 + 'min ';
 }
 
-function renderItems(findedItems) {
-  let content = '';
-  $.each(findedItems, function() {
-    const genres = this.genres.join(', ');
-    const time = getTimeInHours(this.runtime);
-    content += '<div class="content__item">'
-                + '<img src="' + this.poster_path + '" />'
-                + '<div class="item-description">'
-                  + '<div class="item-title"><h2>' + this.title + '</h2><p>' + this.tagline + '</p></div>'
-                  + '<div class="item-info"><h3>Genre: </h3><p>' + genres + '</p></div>'
-                  + '<div class="item-info"><h3>Time: </h3><p>' + time + '</p></div>'
-                  + '<div class="item-info"><h3>Rating: </h3><p>' + this.vote_average + '<span>(Votes: ' + this.vote_count + ')</span></p></div>'
-                  + '<div class="item-info"><h3>Description: </h3><p>' + this.overview + '</p></div>'
-                + '</div>'
-            + '</div>';
+function createCard(item) {
+  const genres = item.genres.join(', ');
+  const time = getTimeInHours(item.runtime);
+  return '<div class="content__item">'
+              + '<img src="' + item.poster_path + '" />'
+              + '<div class="item-description">'
+                + '<div class="item-title"><h2>' + item.title + '</h2><p>' + item.tagline + '</p></div>'
+                + '<div class="item-info"><h3>Genre: </h3><p>' + genres + '</p></div>'
+                + '<div class="item-info"><h3>Time: </h3><p>' + time + '</p></div>'
+                + '<div class="item-info"><h3>Rating: </h3><p>' + item.vote_average + '<span>(Votes: ' + item.vote_count + ')</span></p></div>'
+                + '<div class="item-info"><h3>Description: </h3><p>' + item.overview + '</p></div>'
+              + '</div>'
+          + '</div>';
+}
+
+function renderCards(array) {
+  $.each(array, function() {
+    $('#content').append(this);
   });
-  $('#content').append(content);
 }
 
 function processData(response) {
@@ -53,24 +48,24 @@ function processData(response) {
     }
 
     if (title.includes(findThis) || description.includes(findThis) || genres.includes(findThis)) {
-      if (findedItems.length < 10) {
-        findedItems.push(responseArr[i]);
-      }
+      const card = createCard(responseArr[i]);
+      findedItems.push(card);
     }
 
     if (findedItems.length === 10) {
       data.offset += i + 1;
-      renderItems(findedItems);
-      console.log('data.offset ', data.offset);
+      renderCards(findedItems);
       break;
     }
   }
-  console.log('findedItems ', findedItems);
   
   if (findedItems.length < 10) {
     data.offset += data.limit;
     ajaxRequest(data);
   }
+
+  console.log('data.offset ', data.offset);
+  console.log('findedItems ', findedItems);
 }
 
 function ajaxRequest(data) {
@@ -78,10 +73,10 @@ function ajaxRequest(data) {
     url: data.url,
     dataType: 'json',
     data: { offset: data.offset },
+    beforeSend: function() { data.inProgress = true; },
     context: {
       data: data
     },
-    beforeSend: function() { data.inProgress = true; },
     success: processData
   });
 }
@@ -115,11 +110,4 @@ $(function() {
     });
 });
 
-// $.getJSON(url, {
-//   offset: 0,
-//   limit: 30
-// })
-//   .done(function( response ) {
-//     });
-//     console.log(items);
-//   });
+// https://twog.me/sokratit-tekst-jquery-readmore/
