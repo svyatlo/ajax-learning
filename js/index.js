@@ -5,9 +5,17 @@ function getTimeInHours(timeInMin) {
   return (Math.floor(timeInMin / 60) || 0) + 'h ' + timeInMin % 60 + 'min ';
 }
 
+function cutOverview(text) {
+  if (text.length > 50) {
+    text = text.substring(0, 50) + '...';
+  }
+  return '<p>' + text + '<span class="read-more">>> read more</span></p>';
+}
+
 function createCard(item) {
   const genres = item.genres.join(', ');
   const time = getTimeInHours(item.runtime);
+  const overview = cutOverview(item.overview);
   return '<div class="content__item">'
               + '<img src="' + item.poster_path + '" />'
               + '<div class="item-description">'
@@ -15,7 +23,7 @@ function createCard(item) {
                 + '<div class="item-info"><h3>Genre: </h3><p>' + genres + '</p></div>'
                 + '<div class="item-info"><h3>Time: </h3><p>' + time + '</p></div>'
                 + '<div class="item-info"><h3>Rating: </h3><p>' + item.vote_average + '<span>(Votes: ' + item.vote_count + ')</span></p></div>'
-                + '<div class="item-info"><h3>Description: </h3><p>' + item.overview + '</p></div>'
+                + '<div class="item-info"><h3>Description: </h3>' + overview + '</div>'
               + '</div>'
           + '</div>';
 }
