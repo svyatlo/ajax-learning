@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --open",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "build": "webpack --config webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -20,8 +21,15 @@
   },
   "homepage": "https://github.com/svyatlo/ajax-learning#readme",
   "devDependencies": {
+    "copy-webpack-plugin": "^5.0.3",
+    "css-loader": "^2.1.1",
+    "expose-loader": "^0.7.5",
+    "style-loader": "^0.23.1",
     "webpack": "^4.31.0",
     "webpack-cli": "^3.3.2",
     "webpack-dev-server": "^3.3.1"
+  },
+  "dependencies": {
+    "jquery": "^3.4.1"
   }
 }

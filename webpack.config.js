@@ -1,23 +1,47 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
 	mode: 'development',
-	entry: {
-		app: './src/index.js',
-		print: './src/print.js'
+	entry: './src/index.js',
+	output: {
+		filename: 'main.js',
+		path: path.resolve(__dirname, 'dist')
 	},
-	devtool: 'inline-source-map',
+	devtool: 'cheap-module-eval-source-map',
 	devServer: {
-		contentBase: './dist'
+		contentBase: './dist',
+		watchContentBase: true
+	},
+	module: {
+		rules: [
+			{
+				test: /\.css$/,
+				use: [
+					'style-loader',
+					'css-loader'
+				]
+			},
+			{
+        test: /\.js$/,
+        use: [
+          {
+            loader: 'expose-loader',
+            options: '$'
+          }
+        ]
+      }
+		]
 	},
 	plugins: [
-		new HtmlWebpackPlugin({
-			title: 'Development'
+    new CopyPlugin([
+			{ from: 'index.html', to: 'index.html' },
+      { from: 'css/', to: 'style.css' }
+		]),
+		new webpack.ProvidePlugin({
+			$: 'jquery',
+			jQuery: 'jquery'
 		})
-	],
-	output: {
-		filename: '[name].bundle.js',
-		path: path.resolve(__dirname, 'dist')
-	}
+  ]
 };
