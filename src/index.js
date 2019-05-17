@@ -22,8 +22,9 @@ function createCard(item) {
               + '<div class="item-title"><h2>' + item.title + '</h2><p>' + item.tagline + '</p></div>'
               + '<div class="item-info"><h3>Genre: </h3><p>' + genres + '</p></div>'
               + '<div class="item-info"><h3>Time: </h3><p>' + time + '</p></div>'
-              + '<div class="item-info"><h3>Rating: </h3><p>' + item.vote_average + '<span>(Votes: ' + item.vote_count + ')</span></p></div>'
-              + '<div class="item-info"><h3>Description: </h3><p>' + overview + '<span class="read-more" id="' + item.id + '">>> read more</span></p></div>'
+              + '<div class="item-info"><h3>Rating: </h3><p>' + item.vote_average + ' (Votes: ' + item.vote_count + ')</p></div>'
+              + '<div class="item-info description-short"><h3>Description: </h3><p>' + overview + '<span class="read-more" id="' + item.id + '">>> read more</span></p></div>'
+              + '<div class="item-info description-full"><h3>Description: </h3><p>' + item.overview + '<span class="read-more" id="' + item.id + '"><< read less</span></p></div>'
             + '</div>'
           + '</div>';
 }
@@ -31,26 +32,73 @@ function createCard(item) {
 function createModal(item) {
   const genres = item.genres.join(', ');
   const time = getTimeInHours(item.runtime);
-  return '<div class="wrapper__modal" id="' + item.id + '">'  
-          + '<div class="modal">'
-            + '<img src="' + item.poster_path + '" />'
-            + '<div class="item-description">'
-              + '<div class="item-info modal-title"><div class="item-title"><h2>' + item.title + '</h2><p>' + item.tagline + '</p></div><span class="close-modal">x</span></div>'
-              + '<div class="item-info"><h3>Genre: </h3><p>' + genres + '</p></div>'
-              + '<div class="item-info"><h3>Time: </h3><p>' + time + '</p></div>'
-              + '<div class="item-info"><h3>Rating: </h3><p>' + item.vote_average + '<span>(Votes: ' + item.vote_count + ')</span></p></div>'
-              + '<div class="item-info"><h3>Description: </h3><p>' + item.overview + '</p></div>'
+  return '<div class="wrapper__modal" id="' + item.id + '">'
+          + '<div class="content__modal">'
+            + '<div class="close-modal"><span>x</span></div>'
+            + '<div class="modal">'
+              + '<img src="' + item.poster_path + '" />'
+              + '<div class="item-description">'
+                + '<div class="item-info"><div class="item-title"><h2>' + item.title + '</h2><p>' + item.tagline + '</p></div></div>'
+                + '<div class="item-info"><h3>Genre: </h3><p>' + genres + '</p></div>'
+                + '<div class="item-info"><h3>Time: </h3><p>' + time + '</p></div>'
+                + '<div class="item-info"><h3>Rating: </h3><p>' + item.vote_average + ' (Votes: ' + item.vote_count + ')</p></div>'
+                + '<div class="item-info"><h3>Description: </h3><p>' + item.overview + '</p></div>'
+              + '</div>'
             + '</div>'
           + '</div>'
         + '</div>';
 }
 
-function renderCards(array) {
-  let string = array.join('');
-  
-  $('#content')
-    .append('<div class="cover"></div>')
-    .append(string);
+function renderItems(itemsList, insertPlace) {
+  if ($('#content').contents().length === 0) {
+    $('#content').append('<div class="cover"></div><div class="cards-list"></div><div class="modals-list"></div>');
+  }
+
+  itemsList = itemsList.join('');
+  $(itemsList).appendTo(insertPlace);
+}
+
+function openModal(e) {
+  if ($('body').innerWidth() > '450') {
+    let cardId = '#' + e.target.id + '.wrapper__modal';
+
+    $('body').addClass('lock');
+    $('.cover').fadeIn(400);
+    
+    $(cardId)
+    .addClass('show')
+    .fadeIn(400);
+  } else {
+    console.log('cardId ', ('#' + e.target.id);
+    //console.log('cardId ', $(cardId).find('.description-short'));
+    // $(cardId).find('.description-short').hide();
+    // $(cardId).find('.description-full').show();
+  }
+}
+
+function closeModal() {
+  if ($('body').innerWidth() > '450') {
+    $('body').removeClass('lock');
+    $('.cover').fadeOut(400);
+    $('.show').fadeOut(400).removeClass('show');
+  }
+  // else {
+  //   $('.description-full').hide();
+  //   $('.description-short').show();
+  // }
+}
+
+function ajaxRequest(data) {
+  $.ajax({
+    url: data.url,
+    dataType: 'json',
+    data: { offset: data.offset },
+    beforeSend: function() { data.inProgress = true; },
+    context: {
+      data: data
+    },
+    success: processData
+  });
 }
 
 function processData(response) {
@@ -83,8 +131,8 @@ function processData(response) {
 
     if (cards.length === data.limit) {
       data.offset += i + 1;
-      renderCards(cards);
-      renderCards(modals);
+      renderItems(cards, '.cards-list');
+      renderItems(modals, '.modals-list');
       break;
     }
   }
@@ -95,33 +143,13 @@ function processData(response) {
   }
   console.log('data.offset ', data.offset);
   
-  $('.read-more')
-  .click(function(e) {
-    let cardId = '#' + e.target.id + '.wrapper__modal';
-    $('body').addClass('lock');
-    $('.cover').slideDown(350);
-    $(cardId)
-    .slideDown(350);
-
-    $('.close-modal')
-      .click(function() {
-        $('body').removeClass('lock');
-        $('.cover').slideUp(350);
-        $(cardId).slideUp(350);
-      });
-  });
-}
-
-function ajaxRequest(data) {
-  $.ajax({
-    url: data.url,
-    dataType: 'json',
-    data: { offset: data.offset },
-    beforeSend: function() { data.inProgress = true; },
-    context: {
-      data: data
-    },
-    success: processData
+  $('.read-more').on('click', openModal);
+  $('.close-modal').on('click', closeModal);
+  
+  $(document).on('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
   });
 }
 
