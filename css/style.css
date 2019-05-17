@@ -1,12 +1,12 @@
 body {
-	max-width: 1200px;
+	max-width: 1600px;
 	margin: 50px auto;
 	text-align: center;
 	background: #ccc;
 }
 
 h2 {
-	margin: 2px 0;
+	margin: 0;
 	color: #e65d29;
 }
 
@@ -37,7 +37,8 @@ span {
 	display: flex;
 	align-items: flex-start;
 	justify-content: flex-start;
-	width: 45%;
+	width: 420px;
+	height: 300px;
 	margin: 10px;
 	border: 1px solid #e65d29;
 	border-radius: 15px;
@@ -45,18 +46,18 @@ span {
 }
 
 img {
-	height: 300px;
+	height: 100%;
 	border-bottom-left-radius: 13px;
 	border-top-left-radius: 13px;
 }
 
 .item-description {
-	margin: 15px;
+	margin: 10px;
 	text-align: initial;
 }
 
 .item-title {
-	margin-bottom: 15px;
+	margin: 15px 0;
 }
 
 .item-info {
@@ -78,4 +79,110 @@ img {
 
 .read-more:hover {
 	text-decoration: underline;
+}
+
+.cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: 0.4;
+}
+
+.lock {
+	overflow: hidden;
+}
+
+.wrapper__modal {
+	display: none;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	padding: 80px;
+	text-align: center;
+	overflow-x: auto;
+	overflow-y: scroll;
+}
+
+.modal {
+	display: flex;
+	max-width: 1200px;
+	margin: 0 auto;
+	border: 3px solid #e65d29;
+	border-radius: 13px;
+	background: #fdf9f9;
+}
+
+.modal .item-description {
+	margin: 10px;
+}
+
+.modal img {
+	max-width: 50%;
+	width: 100%;
+	border-right: 3px solid #e6a629;
+}
+
+.modal .item-title {
+	max-width: 80%;
+	margin-bottom: 25px;
+}
+
+.modal h2 {
+	font-size: 38px;
+}
+
+.modal p {
+	font-size: 24px;
+}
+
+.modal .item-info {
+	margin: 0 20px;
+}
+
+.modal .item-info.modal-title {
+	align-items: flex-start;
+	justify-content: space-between;
+	flex-wrap: nowrap;
+	margin: 0 0 0 20px;
+}
+
+.modal .item-info h3,
+.modal .item-info p,
+.modal .item-info span {
+	font-size: 20px;
+}
+
+.close-modal {
+	position: relative;
+	width: 35px;
+	height: 35px;
+	margin: 0 0 0 20px;
+	background: #e65d29;
+	font-family: monospace;
+	border-radius: 50%;
+	cursor: pointer;
+}
+
+.close-modal span {
+	font-size: 24px;
+	color: #fff;
+}
+
+@media (max-width: 425px) {
+	.content__item {
+		display: block;
+		height: initial;
+	}
+
+	img {
+		width: 100%;
+		border-top-right-radius: 13px;
+		border-bottom-left-radius: 0;
+	}
 }
