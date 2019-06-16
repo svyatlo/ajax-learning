@@ -69,7 +69,7 @@ function openModal(e) {
     .addClass('show')
     .fadeIn(400);
   } else {
-    console.log('cardId ', ('#' + e.target.id);
+    console.log('cardId ', ('#' + e.target.id));
     //console.log('cardId ', $(cardId).find('.description-short'));
     // $(cardId).find('.description-short').hide();
     // $(cardId).find('.description-full').show();
