@@ -12,7 +12,8 @@ module.exports = {
 	devtool: 'cheap-module-eval-source-map',
 	devServer: {
 		contentBase: './dist',
-		watchContentBase: true
+		watchContentBase: true,
+		port: 9000
 	},
 	module: {
 		rules: [
