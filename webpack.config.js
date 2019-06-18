@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
@@ -25,13 +24,14 @@ module.exports = {
 				]
 			},
 			{
-        test: /\.js$/,
-        use: [
-          {
-            loader: 'expose-loader',
-            options: '$'
-          }
-        ]
+				test: /\.(js|jsx)$/,
+				exclude: /(node_modules|bower_components)/,
+        use: {
+					loader: 'babel-loader',
+					options: {
+						presets: ['@babel/preset-env', '@babel/preset-react']
+					}
+				}
       }
 		]
 	},
@@ -39,10 +39,6 @@ module.exports = {
     new CopyPlugin([
 			{ from: 'index.html', to: 'index.html' },
       { from: 'css/', to: 'style.css' }
-		]),
-		new webpack.ProvidePlugin({
-			$: 'jquery',
-			jQuery: 'jquery'
-		})
+		])
   ]
 };
