@@ -35,33 +35,21 @@ span {
 
 .cards-list {
 	display: flex;
-	align-items: center;
 	justify-content: center;
-	flex-wrap: wrap;
 }
 
 .content__item {
-	display: flex;
-	align-items: flex-start;
-	justify-content: flex-start;
-    height: 300px;
-	width: 420px;
-	margin: 10px;
+  margin: 10px;
 	border: 1px solid #e65d29;
-	border-radius: 15px;
 	background-color: #fdf9f9;
 }
 
 img {
-	height: 100%;
-	border-right: 3px solid #e6a629;
-	border-bottom-left-radius: 13px;
-	border-top-left-radius: 13px;
+	width: 250px;
 }
 
 .item-description {
 	margin: 10px;
-	text-align: initial;
 }
 
 .item-title {
