@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --open",
+    "dev": "webpack-dev-server --open",
+    "start": "node server.js",
     "watch": "webpack --watch",
-    "build": "webpack --config webpack.config.js",
+    "heroku-postbuild": "webpack --config webpack.config.js",
     "lint": "eslint --config .eslintrc.json ./src/*.js",
     "fix-lint": "eslint --config .eslintrc.json ./src/*.js --fix"
   },
@@ -39,6 +40,7 @@
     "webpack-dev-server": "^3.3.1"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   }

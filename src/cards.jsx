@@ -47,6 +47,7 @@ class Cards extends Component {
           <div className='item-info'><h3>Time: </h3><p>{this.getTimeInHours(filmInfo.runtime)}</p></div>
           <div className='item-info'><h3>Rating: </h3><p>{filmInfo.vote_average} (Votes: {filmInfo.vote_count})</p></div>
           <div className='item-info'><h3>Description: </h3><p>{filmInfo.overview}</p></div>
+          <img src="https://www.clipartmax.com/png/middle/53-531770_gray-arrow-down-icon.png" alt="arrow"></img>
         </div>
       </li>
     );

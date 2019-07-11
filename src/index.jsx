@@ -40,7 +40,7 @@ class RenderFilms extends Component {
 
   render() {
     return (
-      <div class='content'>
+      <div className='content'>
         <form onSubmit={this.handleSubmit}>
           <input id='findThis' type='text' name='findThis' />
           <input type='submit' value='Search' />
